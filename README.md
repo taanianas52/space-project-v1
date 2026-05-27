@@ -63,12 +63,14 @@ AstroHealth/
   get_telemetry.php       Legacy/simple telemetry file
   README.md               Project documentation
   api/
+    config.php            Future reusable PDO MySQL connection helper
     telemetry_get.php     Returns the full JSON schema
     phase_get.php         Returns one mission phase by phase_id
     risk_predict.php      Rule-based placeholder risk analysis API
     chatbot.php           Rule-based placeholder chatbot API
   database/
     schema.sql            Future MySQL schema, not connected yet
+    seed.sql              Future MySQL seed data, not required yet
 ```
 
 ## Current Status
@@ -284,6 +286,7 @@ Current behavior:
 - The dashboard still works from `data-schema.json`.
 - The PHP API still reads JSON and returns the same responses as before.
 - No MySQL connection is required to run the project.
+- `api/config.php` provides a reusable PDO connection helper for future backend work, but current API endpoints do not depend on it yet.
 
 Future plan:
 
@@ -301,6 +304,65 @@ Prepared tables:
 - `chatbot_logs`
 
 When database integration begins, keep the existing API response formats stable so the frontend continues working while the backend source changes from JSON to MySQL.
+
+### Create The Database In phpMyAdmin
+
+1. Start Apache and MySQL from the XAMPP Control Panel.
+2. Open phpMyAdmin:
+
+   [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin)
+
+   If phpMyAdmin uses a different Apache port on your machine, adjust the URL.
+
+3. Click **New** in the left sidebar.
+4. Create a database named:
+
+   ```text
+   astrohealth
+   ```
+
+5. Use collation:
+
+   ```text
+   utf8mb4_unicode_ci
+   ```
+
+### Import The Database Files
+
+Import the files in this order:
+
+1. Select the `astrohealth` database in phpMyAdmin.
+2. Go to the **Import** tab.
+3. Import:
+
+   ```text
+   database/schema.sql
+   ```
+
+4. After the schema import succeeds, import:
+
+   ```text
+   database/seed.sql
+   ```
+
+`schema.sql` creates the future tables. `seed.sql` inserts Adam, the 9 mission phases, and one example Earth Baseline biometric record.
+
+### Future PDO Settings
+
+The prepared connection helper is:
+
+```text
+api/config.php
+```
+
+Default XAMPP settings:
+
+- Host: `localhost`
+- Database: `astrohealth`
+- Username: `root`
+- Password: empty string
+
+The helper logs detailed PDO errors on the server and returns only generic database-unavailable messages to the frontend. This avoids exposing raw database errors during future API work.
 
 ## Cleanup Notes
 

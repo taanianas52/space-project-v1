@@ -470,6 +470,16 @@ function getCurrentPhaseHealthMetrics(phase) {
 function setApiStatus(state, text) {
     apiStatus.dataset.state = state;
     apiStatusText.textContent = text;
+    const statusDetails = {
+        "PHP + MySQL": "PHP API connected and phase data loaded from MySQL.",
+        "JSON Fallback": "PHP API connected, but phase data loaded from JSON fallback.",
+        "Demo Mode": "API unavailable. Dashboard is using local demo data.",
+        Loading: "Checking the current data source.",
+        Checking: "Checking the current data source.",
+        "No Data": "No mission phase data could be loaded."
+    };
+
+    apiStatus.title = statusDetails[text] || text;
 }
 
 function setDashboardLoading(isLoading) {
@@ -478,6 +488,31 @@ function setDashboardLoading(isLoading) {
 
     Array.from(phaseButtons.querySelectorAll("button")).forEach((button) => {
         button.disabled = isLoading;
+    });
+}
+
+function shouldReduceMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function waitForPhaseTransition() {
+    if (shouldReduceMotion()) {
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        window.setTimeout(resolve, 90);
+    });
+}
+
+function finishPhaseTransition() {
+    if (shouldReduceMotion()) {
+        dashboardShell.classList.remove("phase-updating");
+        return;
+    }
+
+    window.requestAnimationFrame(() => {
+        dashboardShell.classList.remove("phase-updating");
     });
 }
 
@@ -607,17 +642,18 @@ async function setMissionPhase(index) {
     setDashboardLoading(true);
     setApiStatus("checking", "Loading");
     clearDashboardError();
+    dashboardShell.classList.add("phase-updating");
 
     let phase = localPhase;
 
     try {
         phase = await loadPhaseFromApi(localPhase.phase_id);
         if (phase.data_source === "mysql") {
-            setApiStatus("online", "PHP + MySQL Online");
+            setApiStatus("online", "PHP + MySQL");
         } else if (phase.data_source === "json_fallback") {
-            setApiStatus("fallback", "PHP Online — JSON Fallback");
+            setApiStatus("fallback", "JSON Fallback");
         } else {
-            setApiStatus("online", "PHP Online");
+            setApiStatus("online", "PHP API");
         }
     } catch (error) {
         phase = localPhase;
@@ -626,8 +662,12 @@ async function setMissionPhase(index) {
     }
 
     if (requestId !== activePhaseRequest) {
+        setDashboardLoading(false);
+        dashboardShell.classList.remove("phase-updating");
         return;
     }
+
+    await waitForPhaseTransition();
 
     const alertClass = getAlertClass(phase);
     const alertLabel = getAlertLabel(phase);
@@ -647,6 +687,7 @@ async function setMissionPhase(index) {
     renderVitals(phase);
     renderBodyState(phase);
     renderChart(phase);
+    finishPhaseTransition();
     setDashboardLoading(false);
 }
 

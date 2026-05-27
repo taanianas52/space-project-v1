@@ -346,7 +346,7 @@ Import the files in this order:
    database/seed.sql
    ```
 
-`schema.sql` creates the future tables. `seed.sql` inserts Adam, the 9 mission phases, and one example Earth Baseline biometric record.
+`schema.sql` creates the future tables. `seed.sql` inserts Adam, the 9 mission phases, phase biometrics, placeholder AI predictions, and placeholder chatbot messages.
 
 ### Future PDO Settings
 

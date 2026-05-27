@@ -51,6 +51,7 @@ Current project constraints:
    [http://localhost:8080/AstroHealth](http://localhost:8080/AstroHealth)
 
 If your Apache port is different, adjust the URL to match your local XAMPP configuration.
+ note: please pay attention to this pointtttt :/
 
 ## Project Structure
 
@@ -375,3 +376,4 @@ The requested duplicate copy files for `index.html` and `style.css` were checked
 - Do not change API response formats casually; the frontend depends on stable JSON keys.
 - Add MySQL only when the team is ready to store real users, missions, telemetry history, or AI logs.
 - Add real AI only after the placeholder contracts are accepted by the team.
+

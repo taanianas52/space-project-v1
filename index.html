@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroHealth - Adam Space Mission</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-shell">
+        <header class="mission-header">
+            <div class="mission-title">
+                <p class="eyebrow">Crew Medical Monitoring</p>
+                <h1>AstroHealth - Adam Space Mission</h1>
+                <p class="mission-copy">Continuous health surveillance for astronaut Adam across launch, orbit, return, and rehabilitation.</p>
+            </div>
+            <div class="mission-summary" aria-label="Mission status summary">
+                <div class="summary-item">
+                    <span>Crew</span>
+                    <strong>Adam</strong>
+                </div>
+                <div class="summary-item">
+                    <span>Mission</span>
+                    <strong>Active</strong>
+                </div>
+                <div class="mission-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <div>
+                        <span>Status Level</span>
+                        <strong id="warningLevel">Normal</strong>
+                    </div>
+                </div>
+                <div class="api-status" id="apiStatus" data-state="checking" role="status" aria-live="polite">
+                    <span class="api-status-light"></span>
+                    <div>
+                        <span>API Link</span>
+                        <strong id="apiStatusText">Checking</strong>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="dashboard-nav" aria-label="Dashboard sections">
+            <a href="#dashboard">Dashboard</a>
+            <a href="#prediction">AI Risk Analysis</a>
+            <a href="#recommendations">Medical Recommendations</a>
+            <a href="#simulation">Body Simulation</a>
+            <a href="#chatbot">Chatbot</a>
+        </nav>
+
+        <main>
+            <section class="panel mission-phases" aria-labelledby="phaseTitle">
+                <div class="section-heading">
+                    <p class="eyebrow">Mission Timeline</p>
+                    <h2 id="phaseTitle">Mission Phase</h2>
+                </div>
+                <div class="phase-buttons" id="phaseButtons"></div>
+            </section>
+
+            <section class="dashboard-grid" id="dashboard">
+                <div class="panel dashboard-panel">
+                    <div class="section-heading">
+                        <p class="eyebrow">Adam Telemetry</p>
+                        <h2>Vital Signs</h2>
+                    </div>
+                    <div class="vital-grid" id="vitalGrid"></div>
+                </div>
+
+                <aside class="panel simulation-panel" id="simulation">
+                    <div class="section-heading">
+                        <p class="eyebrow">Body Simulation</p>
+                        <h2>Medical Schematic</h2>
+                    </div>
+                    <div class="body-simulation" aria-label="Body simulation medical schematic">
+                        <svg class="body-schematic" viewBox="0 0 360 520" role="img" aria-labelledby="bodySchematicTitle bodySchematicDesc">
+                            <title id="bodySchematicTitle">Medical body schematic</title>
+                            <desc id="bodySchematicDesc">Neutral medical silhouette with highlightable zones for head, chest, spine, pelvis, and legs.</desc>
+
+                            <g class="body-reference" aria-hidden="true">
+                                <line x1="180" y1="32" x2="180" y2="486"></line>
+                                <path class="arm-outline" d="M126 132 C102 148 86 178 80 218 L70 305 C68 324 78 338 91 338 C103 338 110 326 111 310 L120 234 C123 203 132 179 146 162"></path>
+                                <path class="arm-outline" d="M234 132 C258 148 274 178 280 218 L290 305 C292 324 282 338 269 338 C257 338 250 326 249 310 L240 234 C237 203 228 179 214 162"></path>
+                                <ellipse class="hand-outline" cx="90" cy="348" rx="15" ry="20"></ellipse>
+                                <ellipse class="hand-outline" cx="270" cy="348" rx="15" ry="20"></ellipse>
+                                <path d="M180 72 C145 74 126 100 122 136 L112 258 C109 292 127 318 158 326 L202 326 C233 318 251 292 248 258 L238 136 C234 100 215 74 180 72 Z"></path>
+                                <path d="M147 326 L132 484"></path>
+                                <path d="M213 326 L228 484"></path>
+                                <path d="M160 330 L160 484"></path>
+                                <path d="M200 330 L200 484"></path>
+                                <text x="35" y="356">Arm</text>
+                                <line x1="63" y1="350" x2="76" y2="350"></line>
+                                <text x="298" y="356">Arm</text>
+                                <line x1="284" y1="350" x2="296" y2="350"></line>
+                            </g>
+
+                            <g class="body-zone" data-part="head">
+                                <circle cx="180" cy="58" r="38"></circle>
+                                <text x="252" y="63">Head</text>
+                                <line x1="218" y1="58" x2="244" y2="58"></line>
+                            </g>
+
+                            <g class="body-zone" data-part="chest">
+                                <path d="M139 126 C149 108 166 100 180 100 C194 100 211 108 221 126 L228 220 C215 235 197 242 180 242 C163 242 145 235 132 220 Z"></path>
+                                <text x="252" y="168">Chest</text>
+                                <line x1="226" y1="164" x2="244" y2="164"></line>
+                            </g>
+
+                            <g class="body-zone" data-part="spine">
+                                <path d="M172 105 L188 105 L190 324 L170 324 Z"></path>
+                                <text x="46" y="217">Spine</text>
+                                <line x1="91" y1="212" x2="170" y2="212"></line>
+                            </g>
+
+                            <g class="body-zone" data-part="pelvis">
+                                <path d="M136 250 C154 242 166 240 180 240 C194 240 206 242 224 250 L216 316 C203 327 192 332 180 332 C168 332 157 327 144 316 Z"></path>
+                                <text x="252" y="294">Pelvis</text>
+                                <line x1="219" y1="289" x2="244" y2="289"></line>
+                            </g>
+
+                            <g class="body-zone" data-part="legs">
+                                <path d="M146 322 L171 322 L166 484 L127 484 Z"></path>
+                                <path d="M189 322 L214 322 L233 484 L194 484 Z"></path>
+                                <text x="252" y="410">Legs</text>
+                                <line x1="226" y1="405" x2="244" y2="405"></line>
+                            </g>
+                        </svg>
+                        <div class="body-legend" aria-label="Risk color legend">
+                            <span><i class="legend-dot legend-normal"></i>Green = Normal</span>
+                            <span><i class="legend-dot legend-warning"></i>Yellow = Warning</span>
+                            <span><i class="legend-dot legend-serious"></i>Orange = Serious</span>
+                            <span><i class="legend-dot legend-emergency"></i>Red = Emergency</span>
+                        </div>
+                    </div>
+                    <div class="radiation-alert" id="radiationAlert">Radiation warning active</div>
+                </aside>
+            </section>
+
+            <section class="insight-grid">
+                <article class="panel" id="prediction">
+                    <div class="section-heading">
+                        <p class="eyebrow">AI Risk Engine Simulation</p>
+                        <h2 id="predictionTitle">Stable Mission Health</h2>
+                    </div>
+                    <div class="ai-engine" aria-label="AI risk engine simulation output">
+                        <div class="ai-risk-header">
+                            <span>Risk Level</span>
+                            <strong id="aiRiskLevel">Low</strong>
+                        </div>
+                        <dl class="ai-risk-list">
+                            <div>
+                                <dt>Predicted Problem</dt>
+                                <dd id="aiProblem"></dd>
+                            </div>
+                            <div>
+                                <dt>Reasoning</dt>
+                                <dd id="aiReasoning"></dd>
+                            </div>
+                            <div>
+                                <dt>Recommended Action</dt>
+                                <dd id="aiAction"></dd>
+                            </div>
+                        </dl>
+                    </div>
+                </article>
+
+                <article class="panel" id="recommendations">
+                    <div class="section-heading">
+                        <p class="eyebrow">Medical Recommendations</p>
+                        <h2>Care Plan</h2>
+                    </div>
+                    <p id="recommendationText"></p>
+                </article>
+
+                <article class="panel chatbot-panel" id="chatbot">
+                    <div class="section-heading">
+                        <p class="eyebrow">Chatbot</p>
+                        <h2 id="chatbotTitle">Mission Support</h2>
+                    </div>
+                    <div class="chat-message">
+                        <span>AstroHealth Bot</span>
+                        <p id="chatbotText"></p>
+                    </div>
+                </article>
+            </section>
+
+            <section class="panel telemetry-panel" aria-labelledby="chartTitle">
+                <div class="section-heading">
+                    <p class="eyebrow">Telemetry Chart</p>
+                    <h2 id="chartTitle">Current Phase Health Profile</h2>
+                </div>
+                <p class="chart-subtitle">Health metrics for the selected mission phase. Scores are normalized from 0 to 100 for comparison.</p>
+                <div class="chart-frame">
+                    <div class="chart-y-label">Risk Score</div>
+                    <div class="chart" id="telemetryChart" aria-label="Mission timeline risk score chart"></div>
+                </div>
+                <div class="chart-x-label">Selected Phase Metrics</div>
+                <div class="chart-legend" aria-label="Telemetry chart risk legend">
+                    <span><i class="legend-dot legend-normal"></i>Green = Normal</span>
+                    <span><i class="legend-dot legend-warning"></i>Yellow = Warning</span>
+                    <span><i class="legend-dot legend-serious"></i>Orange = Serious</span>
+                    <span><i class="legend-dot legend-emergency"></i>Red = Emergency</span>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -264,7 +264,7 @@ async function loadLocalDashboardData() {
 
 async function loadDashboardIndex() {
     if (!shouldTryPhpApi()) {
-        setApiStatus("fallback", "Local JSON");
+        setApiStatus("fallback", "Demo Mode");
         return await loadLocalDashboardData();
     }
 
@@ -283,7 +283,7 @@ async function loadDashboardIndex() {
 
         return data;
     } catch (error) {
-        setApiStatus("fallback", "Local JSON");
+        setApiStatus("fallback", "Demo Mode");
         showDashboardError("PHP API unavailable. Dashboard is using local mission data.");
         return await loadLocalDashboardData();
     }
@@ -612,10 +612,16 @@ async function setMissionPhase(index) {
 
     try {
         phase = await loadPhaseFromApi(localPhase.phase_id);
-        setApiStatus("online", "PHP Online");
+        if (phase.data_source === "mysql") {
+            setApiStatus("online", "PHP + MySQL Online");
+        } else if (phase.data_source === "json_fallback") {
+            setApiStatus("fallback", "PHP Online — JSON Fallback");
+        } else {
+            setApiStatus("online", "PHP Online");
+        }
     } catch (error) {
         phase = localPhase;
-        setApiStatus("fallback", "Local JSON");
+        setApiStatus("fallback", "Demo Mode");
         showDashboardError("Could not reach api/phase_get.php. Showing local fallback data for this phase.");
     }
 

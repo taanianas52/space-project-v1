@@ -67,6 +67,8 @@ AstroHealth/
     phase_get.php         Returns one mission phase by phase_id
     risk_predict.php      Rule-based placeholder risk analysis API
     chatbot.php           Rule-based placeholder chatbot API
+  database/
+    schema.sql            Future MySQL schema, not connected yet
 ```
 
 ## Current Status
@@ -272,6 +274,33 @@ Important frontend contract to preserve:
 
 - `risk_predict.php` should continue returning `risk_level`, `predicted_problem`, `reasoning`, `recommended_action`, and `highlighted_body_zones`.
 - `chatbot.php` should continue returning `detected_emotion`, `confidence_score`, `response_chatbot`, and `environment_control_trigger`.
+
+## Future MySQL Database Plan
+
+The project now includes a prepared MySQL schema at `database/schema.sql` for Anas to use later. This schema is not connected to the current app yet.
+
+Current behavior:
+
+- The dashboard still works from `data-schema.json`.
+- The PHP API still reads JSON and returns the same responses as before.
+- No MySQL connection is required to run the project.
+
+Future plan:
+
+- MySQL will store Adam's astronaut profile and baseline data.
+- MySQL will store mission phase records and flight biometric logs.
+- MySQL will store AI prediction history from `risk_predict.php`.
+- MySQL will store chatbot messages, detected emotions, confidence scores, and environment-control triggers from `chatbot.php`.
+
+Prepared tables:
+
+- `astronauts`
+- `mission_phases`
+- `biometrics`
+- `ai_predictions`
+- `chatbot_logs`
+
+When database integration begins, keep the existing API response formats stable so the frontend continues working while the backend source changes from JSON to MySQL.
 
 ## Cleanup Notes
 

@@ -247,6 +247,14 @@ const bodyZones = Array.from(document.querySelectorAll(".body-zone"));
 let missionPhases = [];
 let dashboardError = null;
 let activePhaseRequest = 0;
+let activePhaseIndex = 0;
+let dataSourceMode = "checking";
+let apiRetryTimer = null;
+let apiRetryInFlight = false;
+let phpApiAvailable = false;
+
+const apiRetryIntervalMs = 30000;
+const apiRequestTimeoutMs = 2500;
 
 async function loadLocalDashboardData() {
     try {
@@ -264,7 +272,7 @@ async function loadLocalDashboardData() {
 
 async function loadDashboardIndex() {
     if (!shouldTryPhpApi()) {
-        setApiStatus("fallback", "Demo Mode");
+        setDataSourceMode("demo");
         return await loadLocalDashboardData();
     }
 
@@ -281,9 +289,11 @@ async function loadDashboardIndex() {
             throw new Error("PHP telemetry endpoint returned invalid data");
         }
 
+        phpApiAvailable = true;
         return data;
     } catch (error) {
-        setApiStatus("fallback", "Demo Mode");
+        phpApiAvailable = false;
+        setDataSourceMode("demo");
         showDashboardError("PHP API unavailable. Dashboard is using local mission data.");
         return await loadLocalDashboardData();
     }
@@ -301,9 +311,19 @@ async function loadPhaseFromApi(phaseId) {
         throw new Error("PHP API is only available through localhost/XAMPP.");
     }
 
-    const response = await fetch(`api/phase_get.php?phase_id=${encodeURIComponent(phaseId)}`, {
-        cache: "no-store"
-    });
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), apiRequestTimeoutMs);
+
+    let response;
+
+    try {
+        response = await fetch(`api/phase_get.php?phase_id=${encodeURIComponent(phaseId)}`, {
+            cache: "no-store",
+            signal: controller.signal
+        });
+    } finally {
+        window.clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
         throw new Error("PHP phase endpoint returned an error");
@@ -482,6 +502,78 @@ function setApiStatus(state, text) {
     apiStatus.title = statusDetails[text] || text;
 }
 
+function updateApiStatusFromMode() {
+    if (dataSourceMode === "mysql") {
+        setApiStatus("online", "PHP + MySQL");
+        return;
+    }
+
+    if (dataSourceMode === "json_fallback") {
+        setApiStatus("fallback", "JSON Fallback");
+        return;
+    }
+
+    if (dataSourceMode === "demo") {
+        setApiStatus("fallback", "Demo Mode");
+    }
+}
+
+function setDataSourceMode(mode) {
+    dataSourceMode = mode;
+    updateApiStatusFromMode();
+
+    if (mode === "mysql") {
+        stopApiRetry();
+    } else {
+        startApiRetry();
+    }
+}
+
+function startApiRetry() {
+    if (!shouldTryPhpApi() || apiRetryTimer) {
+        return;
+    }
+
+    apiRetryTimer = window.setInterval(retryApiConnection, apiRetryIntervalMs);
+}
+
+function stopApiRetry() {
+    if (!apiRetryTimer) {
+        return;
+    }
+
+    window.clearInterval(apiRetryTimer);
+    apiRetryTimer = null;
+}
+
+async function retryApiConnection() {
+    if (apiRetryInFlight || !shouldTryPhpApi() || missionPhases.length === 0) {
+        return;
+    }
+
+    apiRetryInFlight = true;
+
+    try {
+        const activeLocalPhase = missionPhases[activePhaseIndex] || missionPhases[0];
+        const phase = await loadPhaseFromApi(activeLocalPhase.phase_id);
+
+        if (phase.data_source === "mysql") {
+            setDataSourceMode("mysql");
+            clearDashboardError();
+
+            if (missionPhases[activePhaseIndex]?.phase_id === phase.phase_id) {
+                renderSelectedPhase(phase);
+            }
+        } else if (phase.data_source === "json_fallback") {
+            setDataSourceMode("json_fallback");
+        }
+    } catch (error) {
+        setDataSourceMode(phpApiAvailable ? "json_fallback" : "demo");
+    } finally {
+        apiRetryInFlight = false;
+    }
+}
+
 function setDashboardLoading(isLoading) {
     dashboardShell.classList.toggle("is-loading", isLoading);
     dashboardShell.setAttribute("aria-busy", String(isLoading));
@@ -514,6 +606,27 @@ function finishPhaseTransition() {
     window.requestAnimationFrame(() => {
         dashboardShell.classList.remove("phase-updating");
     });
+}
+
+function renderSelectedPhase(phase) {
+    const alertClass = getAlertClass(phase);
+    const alertLabel = getAlertLabel(phase);
+
+    warningLevel.textContent = alertLabel;
+    statusDot.className = `status-dot ${alertClass}`;
+    predictionTitle.textContent = phase.ai_prediction;
+    aiRiskLevel.textContent = alertLabel;
+    aiRiskLevel.className = `risk-badge ${alertClass}`;
+    aiProblem.textContent = phase.ai_prediction;
+    aiReasoning.textContent = phase.ai_reasoning;
+    aiAction.textContent = phase.medical_recommendation;
+    recommendationText.textContent = phase.medical_recommendation;
+    chatbotTitle.textContent = getChatbotTitle(phase);
+    chatbotText.textContent = phase.chatbot_message;
+
+    renderVitals(phase);
+    renderBodyState(phase);
+    renderChart(phase);
 }
 
 function showDashboardError(message) {
@@ -632,6 +745,7 @@ function renderChart(activePhase) {
 
 async function setMissionPhase(index) {
     const requestId = ++activePhaseRequest;
+    activePhaseIndex = index;
     const localPhase = missionPhases[index];
     const buttons = Array.from(phaseButtons.querySelectorAll("button"));
 
@@ -640,25 +754,35 @@ async function setMissionPhase(index) {
     });
 
     setDashboardLoading(true);
-    setApiStatus("checking", "Loading");
-    clearDashboardError();
     dashboardShell.classList.add("phase-updating");
 
     let phase = localPhase;
 
-    try {
-        phase = await loadPhaseFromApi(localPhase.phase_id);
-        if (phase.data_source === "mysql") {
-            setApiStatus("online", "PHP + MySQL");
-        } else if (phase.data_source === "json_fallback") {
-            setApiStatus("fallback", "JSON Fallback");
-        } else {
-            setApiStatus("online", "PHP API");
+    if (dataSourceMode === "json_fallback" || dataSourceMode === "demo") {
+        updateApiStatusFromMode();
+    } else {
+        setApiStatus("checking", "Loading");
+        clearDashboardError();
+
+        try {
+            phase = await loadPhaseFromApi(localPhase.phase_id);
+
+            if (phase.data_source === "mysql") {
+                setDataSourceMode("mysql");
+                clearDashboardError();
+            } else if (phase.data_source === "json_fallback") {
+                setDataSourceMode("json_fallback");
+            } else {
+                setApiStatus("online", "PHP API");
+            }
+        } catch (error) {
+            phase = localPhase;
+            setDataSourceMode(phpApiAvailable ? "json_fallback" : "demo");
+
+            if (!phpApiAvailable) {
+                showDashboardError("Could not reach api/phase_get.php. Showing local fallback data for this phase.");
+            }
         }
-    } catch (error) {
-        phase = localPhase;
-        setApiStatus("fallback", "Demo Mode");
-        showDashboardError("Could not reach api/phase_get.php. Showing local fallback data for this phase.");
     }
 
     if (requestId !== activePhaseRequest) {
@@ -669,24 +793,7 @@ async function setMissionPhase(index) {
 
     await waitForPhaseTransition();
 
-    const alertClass = getAlertClass(phase);
-    const alertLabel = getAlertLabel(phase);
-
-    warningLevel.textContent = alertLabel;
-    statusDot.className = `status-dot ${alertClass}`;
-    predictionTitle.textContent = phase.ai_prediction;
-    aiRiskLevel.textContent = alertLabel;
-    aiRiskLevel.className = `risk-badge ${alertClass}`;
-    aiProblem.textContent = phase.ai_prediction;
-    aiReasoning.textContent = phase.ai_reasoning;
-    aiAction.textContent = phase.medical_recommendation;
-    recommendationText.textContent = phase.medical_recommendation;
-    chatbotTitle.textContent = getChatbotTitle(phase);
-    chatbotText.textContent = phase.chatbot_message;
-
-    renderVitals(phase);
-    renderBodyState(phase);
-    renderChart(phase);
+    renderSelectedPhase(phase);
     finishPhaseTransition();
     setDashboardLoading(false);
 }

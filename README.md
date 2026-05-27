@@ -125,7 +125,7 @@ This endpoint is used by the frontend to load the mission phase index and local 
 
 ### `api/phase_get.php?phase_id=...`
 
-Returns one mission phase object.
+Returns one mission phase object. This endpoint now tries MySQL first through `api/config.php`, then safely falls back to `data-schema.json` if MySQL is unavailable or the requested phase cannot be fully assembled from database records.
 
 Example:
 
@@ -154,6 +154,7 @@ Success response includes the full phase object, including:
 - `highlighted_body_zones`
 - `color_status`
 - `telemetry_chart`
+- `data_source`, either `mysql` or `json_fallback`
 
 Error responses:
 

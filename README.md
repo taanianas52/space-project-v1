@@ -4,6 +4,9 @@ AstroHealth is a space medical monitoring dashboard for astronaut Adam during a 
 
 The project is currently an offline prototype. It uses JSON data and a PHP API layer to simulate future AI-powered medical monitoring without requiring MySQL or a real AI model yet.
 
+Taqwa... AI-ready infrastructure, so if you have any feedback, let Anas know.
+delete this message wHeN you finish ur work.../
+
 ## Project Idea
 
 AstroHealth helps a mission medical team explain Adam's health state across key spaceflight phases:

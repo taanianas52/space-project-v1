@@ -6,9 +6,11 @@ The project is currently an offline prototype. It uses JSON data and a PHP API l
 
 ![important](./important.svg)
 
-Taqwa...actually, I didnt perform your section soo
 
-AI-ready infrastructure  + if you have any feedback => let Anas know :/
+
+Taqwa...AI-ready infrastructure  + if you have any feedback => let Anas know :/
+
+u have to i mean u must understand data-schema.json file ... why?? to return the same fields :/
 
 To be clear,, this project isnt exceptional cuz u will likely face stiff competition + If the focus in this competitionnn is on how the project is created or how it running, then its fairly gooddd. anywayy if the priority is the output and visual presentation, this project currently needs to add SUPERb features. :/
 

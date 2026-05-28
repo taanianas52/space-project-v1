@@ -10,6 +10,8 @@ Taqwa... AI-ready infrastructure, so if you have any feedback == let Anas know :
 
 pls delete this message wHeN you finish ur work.../
 
+<h1><font color="red">IMPORTANT FOR TAQWA AI INTEGRATION</font></h1>
+
 ## Project Idea
 
 AstroHealth helps a mission medical team explain Adam's health state across key spaceflight phases:

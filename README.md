@@ -8,7 +8,7 @@ The project is currently an offline prototype. It uses JSON data and a PHP API l
 
 Taqwa... AI-ready infrastructure, so if you have any feedback == let Anas know :/
 
-To be clear,, this project isnt exceptional; cuz u will likely face stiff competition. If the focus in this competitionnn is on how the project is created or how it running, then its fairly gooddd. anywayy if the priority is the output and visual presentation, this project currently needs to add more features. :/
+To be clear,, this project isnt exceptional cuz u will likely face stiff competition + If the focus in this competitionnn is on how the project is created or how it running, then its fairly gooddd. anywayy if the priority is the output and visual presentation, this project currently needs to add more features. :/
 
 pls delete this message wHeN you finish ur work.../
 

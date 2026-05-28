@@ -10,7 +10,6 @@ Taqwa.... u have to i mean u must understand data-schema.json file ... why?? to 
 
 so the ai-ready infrastructure  + if you have any feedback => let Anas know :/
 
-u have to i mean u must understand data-schema.json file ... why?? to return the same fields :/
 
 ### the most important file for u is api/chatbot.php + api/risk_predict.php so u have to understand it...
 

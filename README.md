@@ -356,6 +356,12 @@ Import the files in this order:
 
 `schema.sql` creates the future tables. `seed.sql` inserts Adam, the 9 mission phases, phase biometrics, placeholder AI predictions, and placeholder chatbot messages.
 
+see, i do it create table + experimental data.
+
+ANy way, be carefull cuz the schema.sql file have create tables info, but seed.sql have experimental data :/
+
+SOOOOOOOO, if u want to edit the FFilessss pls edit it in ur own device and dont push up iTTT unless everyone agrees :) /./././.
+
 ### Future PDO Settings
 
 The prepared connection helper is:

@@ -6,7 +6,7 @@ The project is currently an offline prototype. It uses JSON data and a PHP API l
 
 <h1><font color="red">IMPORTANT FOR TAQWA AI INTEGRATION************</font></h1>
 
-Taqwa... AI-ready infrastructure, so if you have any feedback == let Anas know :/
+Taqwa... AI-ready infrastructure, so if you have any feedback => let Anas know :/
 
 To be clear,, this project isnt exceptional cuz u will likely face stiff competition + If the focus in this competitionnn is on how the project is created or how it running, then its fairly gooddd. anywayy if the priority is the output and visual presentation, this project currently needs to add SUPERb features. :/
 

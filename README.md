@@ -4,11 +4,7 @@ AstroHealth is a space medical monitoring dashboard for astronaut Adam during a 
 
 The project is currently an offline prototype. It uses JSON data and a PHP API layer to simulate future AI-powered medical monitoring without requiring MySQL or a real AI model yet.
 
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="40">
-  <text y="30" font-size="20" fill="red" font-family="Arial" font-weight="bold">
-    IMPORTANT FOR TAQWA AI INTEGRATION************
-  </text>
-</svg>
+<h1><font color="red">IMPORTANT FOR TAQWA AI INTEGRATION************</font></h1>
 
 Taqwa...actually, I didnt perform your section soo
 

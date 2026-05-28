@@ -13,7 +13,7 @@ Taqwa.... u have to i mean u must understand data-schema.json file ... why?? to 
 
 ### the most important file for u is api/chatbot.php + api/risk_predict.php so u have to understand it...
 
-To be honest,, this project isnt exceptional cuz u will likely face stiff competition + If the focus in this competitionnn is on how the project is created or how it running, then its fairly gooddd. anywayy if the priority is the output and visual presentation, this project currently needs to add SUPERb features. :/
+To be honest,, this project isnt exceptional cuz u will likely face stiff competition + If the focus in this competitionnn is on how the project is created or how it running, then its fairly gooddd BUTT if the priority is the output and visual presentation, this project currently needs to add SUPERb features. :/
 
 pls delete this message wHeN you finish ur work.../
 
